@@ -1,10 +1,1040 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>My Flask App</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokémon Timekeeper</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --scene-gradient: linear-gradient(135deg, #2c3e50, #4ca1af);
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --card-border: rgba(255, 255, 255, 0.35);
+            --text-primary: #182028;
+            --text-secondary: #4b5765;
+            --accent: #ffcb05;
+            --danger: #d9534f;
+            --success: #3fb47c;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            color: var(--text-primary);
+            background: #0c1116;
+            min-height: 100%;
+        }
+
+        body {
+            background: radial-gradient(circle at top, rgba(255,255,255,0.05) 0%, rgba(12,17,22,1) 55%);
+        }
+
+        .app-shell {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .scene-backdrop {
+            position: fixed;
+            inset: 0;
+            background: var(--scene-gradient);
+            transition: background 1s ease;
+            filter: saturate(120%);
+            z-index: -2;
+        }
+
+        .scene-overlay {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(10, 14, 18, 0.1) 0%, rgba(10, 14, 18, 0.7) 70%);
+            z-index: -1;
+        }
+
+        header {
+            padding: 32px 48px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            color: #fff;
+        }
+
+        header h1 {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: clamp(36px, 4vw, 52px);
+            letter-spacing: 1px;
+            margin: 0;
+            text-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
+        }
+
+        .clock-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            align-items: center;
+        }
+
+        .clock-display {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .clock-display time {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: clamp(38px, 4.2vw, 58px);
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .clock-display span {
+            font-size: 18px;
+            letter-spacing: 1px;
+            opacity: 0.85;
+        }
+
+        .slot-chip {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(4px);
+        }
+
+        nav {
+            display: flex;
+            gap: 12px;
+            padding: 0 48px 18px;
+        }
+
+        nav button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 999px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            color: rgba(255,255,255,0.85);
+            background: rgba(255,255,255,0.15);
+            transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+            backdrop-filter: blur(4px);
+        }
+
+        nav button.active, nav button:hover {
+            color: #111;
+            background: var(--accent);
+            box-shadow: 0 14px 24px rgba(0, 0, 0, 0.25);
+            transform: translateY(-1px);
+        }
+
+        main {
+            flex: 1;
+            padding: 0 48px 48px;
+            display: grid;
+        }
+
+        section[data-section] {
+            display: none;
+            animation: fade-in 0.45s ease;
+        }
+
+        section[data-section].active {
+            display: block;
+        }
+
+        @keyframes fade-in {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .encounter-area {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+            align-items: stretch;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 30px 60px rgba(15, 26, 38, 0.25);
+            backdrop-filter: blur(14px);
+        }
+
+        .card h2 {
+            margin: 0 0 12px;
+            font-size: 20px;
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: var(--text-secondary);
+        }
+
+        .encounter-card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .encounter-hero {
+            position: relative;
+            min-height: 340px;
+            border-radius: 20px;
+            background: linear-gradient(160deg, rgba(255,255,255,0.6), rgba(255,255,255,0));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+
+        .encounter-hero img {
+            width: min(260px, 60%);
+            filter: drop-shadow(0 20px 30px rgba(0,0,0,0.35));
+            transition: transform 0.5s ease;
+        }
+
+        .encounter-hero img:hover {
+            transform: scale(1.05) translateY(-6px);
+        }
+
+        .encounter-details {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .type-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: rgba(24,32,40,0.08);
+        }
+
+        .encounter-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            font-size: 14px;
+        }
+
+        .encounter-description {
+            margin: 0;
+            font-size: 15px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+        }
+
+        .catch-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .ball-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .ball-buttons button {
+            flex: 1;
+            min-width: 140px;
+            padding: 14px 16px;
+            border-radius: 16px;
+            border: 0;
+            cursor: pointer;
+            font-weight: 700;
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+            color: #fff;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+        }
+
+        .ball-buttons button[data-ball="pokeBalls"] {
+            background: linear-gradient(135deg, #ef5350, #d32f2f);
+        }
+
+        .ball-buttons button[data-ball="greatBalls"] {
+            background: linear-gradient(135deg, #42a5f5, #1e88e5);
+        }
+
+        .ball-buttons button[data-ball="ultraBalls"] {
+            background: linear-gradient(135deg, #fbc02d, #f57f17);
+            color: #1a1a1a;
+        }
+
+        .ball-buttons button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            filter: grayscale(20%);
+        }
+
+        .ball-buttons button:not(:disabled):hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .shiny-rate {
+            font-size: 13px;
+            letter-spacing: 0.4px;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+        }
+
+        .inventory-card {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .resource-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .resource-entry {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            border-radius: 16px;
+            background: rgba(24,32,40,0.06);
+        }
+
+        .resource-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .resource-name {
+            font-weight: 700;
+            letter-spacing: 0.6px;
+        }
+
+        .resource-count {
+            font-size: 26px;
+            font-weight: 700;
+        }
+
+        .resource-timer {
+            font-size: 13px;
+            color: var(--text-secondary);
+            letter-spacing: 0.4px;
+        }
+
+        .log-card {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .log-card ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 220px;
+            overflow-y: auto;
+        }
+
+        .log-card li {
+            padding: 12px 16px;
+            border-radius: 14px;
+            background: rgba(24,32,40,0.06);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .log-card li.success {
+            border-left: 4px solid var(--success);
+        }
+
+        .log-card li.fail {
+            border-left: 4px solid var(--danger);
+        }
+
+        .collection-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+
+        .summary-pill {
+            padding: 20px 24px;
+            border-radius: 18px;
+            background: rgba(255,255,255,0.2);
+            color: #fff;
+            font-weight: 600;
+            letter-spacing: 0.6px;
+            box-shadow: 0 12px 24px rgba(0,0,0,0.25);
+            backdrop-filter: blur(6px);
+        }
+
+        .collection-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+        }
+
+        .collection-card {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: center;
+            padding: 18px;
+            border-radius: 20px;
+            background: var(--card-bg);
+            border: 1px solid rgba(255,255,255,0.25);
+            box-shadow: 0 18px 30px rgba(0,0,0,0.18);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .collection-card.shiny::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,215,0,0.18), rgba(255,255,255,0));
+            z-index: -1;
+        }
+
+        .collection-card img {
+            width: 160px;
+            filter: drop-shadow(0 12px 20px rgba(0,0,0,0.25));
+        }
+
+        .collection-card .name {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .collection-card .caught-meta {
+            font-size: 13px;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+
+        .collection-empty {
+            padding: 28px;
+            border-radius: 18px;
+            background: rgba(255,255,255,0.18);
+            color: #fff;
+            font-weight: 500;
+            text-align: center;
+            letter-spacing: 0.6px;
+        }
+
+        footer {
+            padding: 18px 48px 32px;
+            color: rgba(255,255,255,0.7);
+            font-size: 14px;
+            letter-spacing: 0.4px;
+        }
+
+        @media (max-width: 768px) {
+            header, nav, main, footer {
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+
+            .encounter-hero {
+                min-height: 280px;
+            }
+
+            .ball-buttons button {
+                min-width: 120px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Hello from Flask!</h1>
-    <p>This is a demonstration of my capabilities.</p>
+    <div class="scene-backdrop" aria-hidden="true"></div>
+    <div class="scene-overlay" aria-hidden="true"></div>
+    <div class="app-shell">
+        <header>
+            <div>
+                <h1>Pokémon Timekeeper</h1>
+                <p class="subtitle">Track time, earn supplies, and befriend the Pokémon that appear with each passing hour.</p>
+            </div>
+            <div class="clock-meta">
+                <div class="clock-display">
+                    <time id="clock-time">00:00:00</time>
+                    <span id="clock-date">—</span>
+                </div>
+                <div class="slot-chip" id="slot-label">Awaiting time slot…</div>
+            </div>
+        </header>
+        <nav>
+            <button class="active" data-target="adventure">Adventure</button>
+            <button data-target="collection">Collection</button>
+        </nav>
+        <main>
+            <section id="adventure" data-section class="active">
+                <div class="encounter-area">
+                    <article class="card encounter-card">
+                        <div class="encounter-hero">
+                            <img id="pokemon-art" src="" alt="Encountered Pokémon" loading="lazy">
+                        </div>
+                        <div class="encounter-details">
+                            <div class="slot-chip" id="encounter-slot">—</div>
+                            <h2 id="pokemon-name">—</h2>
+                            <div id="pokemon-types" class="type-row"></div>
+                            <p id="pokemon-description" class="encounter-description">Stay a moment to meet the Pokémon that matches this time of day.</p>
+                            <div class="encounter-stats">
+                                <div>
+                                    <strong>Temperament</strong>
+                                    <div id="pokemon-temperament">—</div>
+                                </div>
+                                <div>
+                                    <strong>Catch Difficulty</strong>
+                                    <div id="pokemon-difficulty">—</div>
+                                </div>
+                                <div>
+                                    <strong>Best Ball</strong>
+                                    <div id="pokemon-best-ball">—</div>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                    <article class="card inventory-card">
+                        <h2>Trainer Supply Cache</h2>
+                        <p class="shiny-rate">Shiny chance: 1 in 64 throws. Supplies refresh in real time even while you're away.</p>
+                        <div class="resource-list">
+                            <div class="resource-entry" data-resource="pokeBalls">
+                                <div class="resource-meta">
+                                    <span class="resource-name">Poké Balls</span>
+                                    <span class="resource-timer">+1 every minute · Next in <span data-timer="pokeBalls">60s</span></span>
+                                </div>
+                                <span class="resource-count" data-count="pokeBalls">0</span>
+                            </div>
+                            <div class="resource-entry" data-resource="greatBalls">
+                                <div class="resource-meta">
+                                    <span class="resource-name">Great Balls</span>
+                                    <span class="resource-timer">+2 every hour · Next in <span data-timer="greatBalls">1h</span></span>
+                                </div>
+                                <span class="resource-count" data-count="greatBalls">0</span>
+                            </div>
+                            <div class="resource-entry" data-resource="ultraBalls">
+                                <div class="resource-meta">
+                                    <span class="resource-name">Ultra Balls</span>
+                                    <span class="resource-timer">+1 every day · Next in <span data-timer="ultraBalls">1d</span></span>
+                                </div>
+                                <span class="resource-count" data-count="ultraBalls">0</span>
+                            </div>
+                        </div>
+                        <div class="catch-controls">
+                            <h2>Attempt a Catch</h2>
+                            <div class="ball-buttons">
+                                <button data-ball="pokeBalls">Poké Ball</button>
+                                <button data-ball="greatBalls">Great Ball</button>
+                                <button data-ball="ultraBalls">Ultra Ball</button>
+                            </div>
+                        </div>
+                    </article>
+                    <article class="card log-card">
+                        <h2>Adventure Log</h2>
+                        <ul id="activity-log">
+                            <li>Timekeeper initialized. Your journey begins now.</li>
+                        </ul>
+                    </article>
+                </div>
+            </section>
+            <section id="collection" data-section>
+                <div class="collection-summary" id="collection-summary">
+                    <div class="summary-pill">Total Pokémon: <span id="summary-total">0</span></div>
+                    <div class="summary-pill">Unique Species: <span id="summary-unique">0</span></div>
+                    <div class="summary-pill">Shiny Friends: <span id="summary-shiny">0</span></div>
+                </div>
+                <div id="collection-grid" class="collection-grid"></div>
+                <div id="collection-empty" class="collection-empty" hidden>
+                    You haven't caught any Pokémon yet. Explore each time of day to build your collection!
+                </div>
+            </section>
+        </main>
+        <footer>
+            Pokémon assets © Nintendo/Creatures Inc./GAME FREAK inc. This fan experience is for demonstration purposes only.
+        </footer>
+    </div>
+    <script>
+        const TIME_SLOTS = [
+            {
+                key: 'midnight',
+                label: 'Midnight Watch',
+                start: 0,
+                end: 4,
+                gradient: 'linear-gradient(135deg, #0f2027, #203a43, #2c5364)'
+            },
+            {
+                key: 'dawn',
+                label: 'Dawnrise',
+                start: 4,
+                end: 7,
+                gradient: 'linear-gradient(135deg, #1a2980, #26d0ce)'
+            },
+            {
+                key: 'morning',
+                label: 'Morning Bloom',
+                start: 7,
+                end: 12,
+                gradient: 'linear-gradient(135deg, #f7971e, #ffd200)'
+            },
+            {
+                key: 'day',
+                label: 'Afternoon Peaks',
+                start: 12,
+                end: 18,
+                gradient: 'linear-gradient(135deg, #56ccf2, #2f80ed)'
+            },
+            {
+                key: 'evening',
+                label: 'Twilight Glow',
+                start: 18,
+                end: 21,
+                gradient: 'linear-gradient(135deg, #e96443, #904e95)'
+            },
+            {
+                key: 'night',
+                label: 'Starlit Night',
+                start: 21,
+                end: 24,
+                gradient: 'linear-gradient(135deg, #141e30, #243b55)'
+            }
+        ];
+
+        const ROSTER = {
+            midnight: [
+                { id: 197, name: 'Umbreon', types: ['Dark'], temperament: 'Calm & observant', difficulty: 'Sneaky', bestBall: 'Ultra Ball', description: 'Umbreon prowls the quiet midnight streets, watching over trainers who stay up late.' },
+                { id: 607, name: 'Litwick', types: ['Ghost', 'Fire'], temperament: 'Playful', difficulty: 'Elusive', bestBall: 'Great Ball', description: 'Litwick flickers to life at midnight, eager to guide sleepy trainers with its gentle flame.' },
+                { id: 425, name: 'Drifloon', types: ['Ghost', 'Flying'], temperament: 'Dreamy', difficulty: 'Light & breezy', bestBall: 'Poké Ball', description: 'Drifloon drifts through the night sky, buoyed by cool midnight breezes.' }
+            ],
+            dawn: [
+                { id: 519, name: 'Pidove', types: ['Normal', 'Flying'], temperament: 'Optimistic', difficulty: 'Trusting', bestBall: 'Poké Ball', description: 'Pidove fills the dawn air with soft coos, excited for the day ahead.' },
+                { id: 667, name: 'Litleo', types: ['Fire', 'Normal'], temperament: 'Bold', difficulty: 'Fiery spirit', bestBall: 'Great Ball', description: 'Litleo greets the rising sun with a confident roar, warming the morning chill.' },
+                { id: 152, name: 'Chikorita', types: ['Grass'], temperament: 'Gentle', difficulty: 'Friendly', bestBall: 'Poké Ball', description: 'Chikorita welcomes the dawn by spreading the scent of fresh leaves.' }
+            ],
+            morning: [
+                { id: 25, name: 'Pikachu', types: ['Electric'], temperament: 'Energetic', difficulty: 'Quick sparks', bestBall: 'Great Ball', description: 'Pikachu builds a charge as the morning sun brightens the sky.' },
+                { id: 175, name: 'Togepi', types: ['Fairy'], temperament: 'Joyful', difficulty: 'Cuddly', bestBall: 'Poké Ball', description: 'Togepi radiates happiness that perfectly matches the morning glow.' },
+                { id: 667, name: 'Litleo', types: ['Fire', 'Normal'], temperament: 'Bold', difficulty: 'Fiery spirit', bestBall: 'Great Ball', description: 'Litleo roams the savanna as the daylight warms the horizon.' }
+            ],
+            day: [
+                { id: 6, name: 'Charizard', types: ['Fire', 'Flying'], temperament: 'Proud', difficulty: 'Intense', bestBall: 'Ultra Ball', description: 'Charizard soars under the bright afternoon sun, radiating fierce heat.' },
+                { id: 131, name: 'Lapras', types: ['Water', 'Ice'], temperament: 'Serene', difficulty: 'Steady', bestBall: 'Great Ball', description: 'Lapras glides across shimmering waters during the calm afternoon.' },
+                { id: 470, name: 'Leafeon', types: ['Grass'], temperament: 'Graceful', difficulty: 'Alert', bestBall: 'Great Ball', description: 'Leafeon bask in the afternoon light, soaking up the sun for photosynthesis.' }
+            ],
+            evening: [
+                { id: 700, name: 'Sylveon', types: ['Fairy'], temperament: 'Affectionate', difficulty: 'Graceful', bestBall: 'Great Ball', description: 'Sylveon dances in the golden hues of sunset, ribbons shimmering gently.' },
+                { id: 130, name: 'Gyarados', types: ['Water', 'Flying'], temperament: 'Fierce', difficulty: 'Wild', bestBall: 'Ultra Ball', description: 'As twilight falls, Gyarados emerges from deep waters with a roar.' },
+                { id: 196, name: 'Espeon', types: ['Psychic'], temperament: 'Focused', difficulty: 'Adept', bestBall: 'Ultra Ball', description: 'Espeon senses the changing evening light with its psychic powers.' }
+            ],
+            night: [
+                { id: 94, name: 'Gengar', types: ['Ghost', 'Poison'], temperament: 'Mischievous', difficulty: 'Trickster', bestBall: 'Ultra Ball', description: 'Gengar revels in the shadows of night, chuckling softly at passers-by.' },
+                { id: 197, name: 'Umbreon', types: ['Dark'], temperament: 'Calm & observant', difficulty: 'Sneaky', bestBall: 'Ultra Ball', description: 'Umbreon patrols moonlit paths, its rings glowing softly.' },
+                { id: 302, name: 'Sableye', types: ['Dark', 'Ghost'], temperament: 'Cunning', difficulty: 'Mysterious', bestBall: 'Great Ball', description: 'Sableye searches for gemstones when the stars shimmer brightly.' }
+            ]
+        };
+
+        const RESOURCE_SETTINGS = {
+            pokeBalls: { label: 'Poké Balls', interval: 60_000, amount: 1, probability: 0.55 },
+            greatBalls: { label: 'Great Balls', interval: 3_600_000, amount: 2, probability: 0.72 },
+            ultraBalls: { label: 'Ultra Balls', interval: 86_400_000, amount: 1, probability: 0.9 }
+        };
+
+        const SHINY_CHANCE = 1 / 64;
+
+        const STORAGE_KEY = 'pokemon-timekeeper-state-v1';
+
+        let state = {
+            inventory: { pokeBalls: 3, greatBalls: 1, ultraBalls: 0 },
+            timers: {
+                pokeBalls: Date.now(),
+                greatBalls: Date.now(),
+                ultraBalls: Date.now()
+            },
+            collection: [],
+            log: []
+        };
+
+        let currentSlot = null;
+        let currentPokemon = null;
+
+        function loadState() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (!raw) {
+                    saveState();
+                    return;
+                }
+                const parsed = JSON.parse(raw);
+                state = {
+                    inventory: { ...state.inventory, ...(parsed.inventory || {}) },
+                    timers: { ...state.timers, ...(parsed.timers || {}) },
+                    collection: Array.isArray(parsed.collection) ? parsed.collection : [],
+                    log: Array.isArray(parsed.log) ? parsed.log.slice(0, 12) : []
+                };
+            } catch (error) {
+                console.warn('Failed to load state', error);
+                saveState();
+            }
+        }
+
+        function saveState() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        }
+
+        function getTimeSlot(date = new Date()) {
+            const hour = date.getHours();
+            return TIME_SLOTS.find(slot => hour >= slot.start && hour < slot.end) || TIME_SLOTS[0];
+        }
+
+        function updateScene(slot) {
+            document.documentElement.style.setProperty('--scene-gradient', slot.gradient);
+            document.getElementById('slot-label').textContent = slot.label;
+            document.getElementById('encounter-slot').textContent = slot.label;
+        }
+
+        function getRandomEncounter(slotKey) {
+            const roster = ROSTER[slotKey];
+            if (!roster || roster.length === 0) {
+                return null;
+            }
+            const pick = roster[Math.floor(Math.random() * roster.length)];
+            return { ...pick };
+        }
+
+        function getArtUrl(id, shiny = false) {
+            const base = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/';
+            return shiny ? `${base}shiny/${id}.png` : `${base}${id}.png`;
+        }
+
+        function renderEncounter() {
+            if (!currentPokemon) {
+                document.getElementById('pokemon-name').textContent = 'No Pokémon';
+                return;
+            }
+            const { name, types, description, temperament, difficulty, bestBall, id, shiny } = currentPokemon;
+            const art = document.getElementById('pokemon-art');
+            art.src = getArtUrl(id, shiny);
+            art.alt = shiny ? `Shiny ${name}` : name;
+            document.getElementById('pokemon-name').textContent = shiny ? `✨ Shiny ${name}` : name;
+
+            const typesContainer = document.getElementById('pokemon-types');
+            typesContainer.innerHTML = '';
+            types.forEach(type => {
+                const span = document.createElement('span');
+                span.className = 'type-chip';
+                span.textContent = type;
+                typesContainer.appendChild(span);
+            });
+
+            document.getElementById('pokemon-description').textContent = description;
+            document.getElementById('pokemon-temperament').textContent = temperament;
+            document.getElementById('pokemon-difficulty').textContent = difficulty;
+            document.getElementById('pokemon-best-ball').textContent = bestBall;
+        }
+
+        function accrueResources() {
+            const now = Date.now();
+            Object.entries(RESOURCE_SETTINGS).forEach(([key, settings]) => {
+                if (!state.timers[key]) {
+                    state.timers[key] = now;
+                }
+                const elapsed = now - state.timers[key];
+                if (elapsed >= settings.interval) {
+                    const ticks = Math.floor(elapsed / settings.interval);
+                    state.inventory[key] = (state.inventory[key] || 0) + ticks * settings.amount;
+                    state.timers[key] += ticks * settings.interval;
+                    recordLog(`Received ${ticks * settings.amount} ${settings.label}!`, 'success', false);
+                }
+            });
+            saveState();
+            updateInventoryUI();
+        }
+
+        function formatDuration(ms) {
+            if (ms <= 0) return 'now';
+            const totalSeconds = Math.ceil(ms / 1000);
+            if (totalSeconds < 60) {
+                return `${totalSeconds}s`;
+            }
+            if (totalSeconds < 3600) {
+                const minutes = Math.floor(totalSeconds / 60);
+                const seconds = totalSeconds % 60;
+                return `${minutes}m ${seconds}s`;
+            }
+            if (totalSeconds < 86_400) {
+                const hours = Math.floor(totalSeconds / 3600);
+                const minutes = Math.floor((totalSeconds % 3600) / 60);
+                return `${hours}h ${minutes}m`;
+            }
+            const days = Math.floor(totalSeconds / 86_400);
+            const hours = Math.floor((totalSeconds % 86_400) / 3600);
+            return `${days}d ${hours}h`;
+        }
+
+        function updateInventoryUI() {
+            Object.keys(RESOURCE_SETTINGS).forEach(key => {
+                const countEl = document.querySelector(`[data-count="${key}"]`);
+                if (countEl) {
+                    countEl.textContent = state.inventory[key] || 0;
+                }
+                const button = document.querySelector(`.ball-buttons button[data-ball="${key}"]`);
+                if (button) {
+                    button.disabled = (state.inventory[key] || 0) === 0;
+                }
+            });
+            renderLog();
+            renderCollection();
+        }
+
+        function updateTimers() {
+            const now = Date.now();
+            Object.entries(RESOURCE_SETTINGS).forEach(([key, settings]) => {
+                const timerEl = document.querySelector(`[data-timer="${key}"]`);
+                if (!timerEl) return;
+                const elapsed = now - state.timers[key];
+                const remaining = settings.interval - elapsed;
+                timerEl.textContent = formatDuration(remaining);
+            });
+        }
+
+        function recordLog(message, type = 'info', persist = true) {
+            const entry = {
+                id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
+                message,
+                type,
+                timestamp: new Date().toISOString()
+            };
+            state.log.unshift(entry);
+            state.log = state.log.slice(0, 12);
+            if (persist) {
+                saveState();
+            }
+        }
+
+        function renderLog() {
+            const logList = document.getElementById('activity-log');
+            logList.innerHTML = '';
+            if (state.log.length === 0) {
+                const li = document.createElement('li');
+                li.textContent = 'The log is quiet… venture out to make history!';
+                logList.appendChild(li);
+                return;
+            }
+            state.log.forEach(entry => {
+                const li = document.createElement('li');
+                li.className = entry.type || '';
+                const time = new Date(entry.timestamp);
+                li.innerHTML = `<strong>${time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</strong> — ${entry.message}`;
+                logList.appendChild(li);
+            });
+        }
+
+        function renderCollection() {
+            const grid = document.getElementById('collection-grid');
+            const emptyState = document.getElementById('collection-empty');
+            const totalEl = document.getElementById('summary-total');
+            const uniqueEl = document.getElementById('summary-unique');
+            const shinyEl = document.getElementById('summary-shiny');
+
+            const total = state.collection.length;
+            const unique = new Set(state.collection.map(item => item.name)).size;
+            const shinyCount = state.collection.filter(item => item.shiny).length;
+
+            totalEl.textContent = total;
+            uniqueEl.textContent = unique;
+            shinyEl.textContent = shinyCount;
+
+            grid.innerHTML = '';
+            if (total === 0) {
+                emptyState.hidden = false;
+                return;
+            }
+            emptyState.hidden = true;
+            state.collection
+                .slice()
+                .sort((a, b) => new Date(b.caughtAt) - new Date(a.caughtAt))
+                .forEach(entry => {
+                    const card = document.createElement('div');
+                    card.className = 'collection-card' + (entry.shiny ? ' shiny' : '');
+                    const art = document.createElement('img');
+                    art.src = getArtUrl(entry.id, entry.shiny);
+                    art.alt = entry.shiny ? `Shiny ${entry.name}` : entry.name;
+                    const name = document.createElement('div');
+                    name.className = 'name';
+                    name.textContent = entry.shiny ? `✨ Shiny ${entry.name}` : entry.name;
+                    const meta = document.createElement('div');
+                    meta.className = 'caught-meta';
+                    const caughtDate = new Date(entry.caughtAt);
+                    meta.innerHTML = `${entry.slotLabel}<br>Captured with a ${RESOURCE_SETTINGS[entry.ballType].label}<br>${caughtDate.toLocaleString()}`;
+                    card.append(art, name, meta);
+                    grid.appendChild(card);
+                });
+        }
+
+        function attemptCatch(ballType) {
+            const settings = RESOURCE_SETTINGS[ballType];
+            if (!settings) return;
+            if (!currentPokemon) {
+                recordLog('No Pokémon is present to catch right now.', 'fail');
+                renderLog();
+                updateInventoryUI();
+                return;
+            }
+            if ((state.inventory[ballType] || 0) <= 0) {
+                recordLog(`You are out of ${settings.label}.`, 'fail');
+                renderLog();
+                updateInventoryUI();
+                return;
+            }
+            state.inventory[ballType] -= 1;
+            const shiny = Math.random() < SHINY_CHANCE;
+            const catchRoll = Math.random();
+            const difficultyModifier = currentPokemon && currentPokemon.difficulty === 'Intense' ? -0.1 : 0;
+            const successChance = Math.min(0.95, Math.max(0.25, settings.probability + difficultyModifier));
+            const success = catchRoll < successChance;
+
+            if (success && currentPokemon) {
+                const capture = {
+                    ...currentPokemon,
+                    shiny,
+                    ballType,
+                    slotKey: currentSlot.key,
+                    slotLabel: currentSlot.label,
+                    caughtAt: new Date().toISOString()
+                };
+                state.collection.push(capture);
+                recordLog(`${shiny ? '✨ Shiny ' : ''}${currentPokemon.name} was caught using a ${settings.label}!`, 'success');
+                renderEncounter();
+                refreshEncounter(true);
+            } else {
+                recordLog(`${currentPokemon ? currentPokemon.name : 'The Pokémon'} slipped away...`, 'fail');
+            }
+            saveState();
+            updateInventoryUI();
+        }
+
+        function refreshEncounter(force = false) {
+            if (!currentSlot) return;
+            if (!force && currentPokemon && Math.random() > 0.4) {
+                return;
+            }
+            const encounter = getRandomEncounter(currentSlot.key);
+            if (encounter) {
+                currentPokemon = { ...encounter, shiny: false };
+                renderEncounter();
+            }
+        }
+
+        function updateClock() {
+            const now = new Date();
+            const clockEl = document.getElementById('clock-time');
+            const dateEl = document.getElementById('clock-date');
+            clockEl.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            dateEl.textContent = now.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' });
+
+            const slot = getTimeSlot(now);
+            if (!currentSlot || currentSlot.key !== slot.key) {
+                currentSlot = slot;
+                updateScene(slot);
+                refreshEncounter(true);
+                recordLog(`The world shifts into ${slot.label}. New Pokémon feel the call.`, 'info');
+                saveState();
+            }
+        }
+
+        function setupNavigation() {
+            const navButtons = document.querySelectorAll('nav button');
+            navButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    navButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    const target = button.dataset.target;
+                    document.querySelectorAll('section[data-section]').forEach(section => {
+                        section.classList.toggle('active', section.id === target);
+                    });
+                });
+            });
+        }
+
+        function setupCatchButtons() {
+            document.querySelectorAll('.ball-buttons button').forEach(button => {
+                button.addEventListener('click', () => attemptCatch(button.dataset.ball));
+            });
+        }
+
+        function initialize() {
+            loadState();
+            setupNavigation();
+            setupCatchButtons();
+            accrueResources();
+            updateInventoryUI();
+            renderLog();
+            renderCollection();
+            updateClock();
+            updateTimers();
+            refreshEncounter(true);
+
+            setInterval(() => {
+                updateClock();
+                accrueResources();
+                updateTimers();
+            }, 10_000);
+
+            setInterval(() => {
+                refreshEncounter();
+            }, 60_000);
+
+            setInterval(() => {
+                updateTimers();
+            }, 1_000);
+        }
+
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                accrueResources();
+                updateClock();
+                updateTimers();
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', initialize);
+    </script>
 </body>
 </html>
