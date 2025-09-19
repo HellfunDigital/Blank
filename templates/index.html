@@ -6,16 +6,22 @@
     <title>Pokémon Timekeeper</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Roboto:wght@300;400;500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
         :root {
-            --scene-gradient: linear-gradient(135deg, #2c3e50, #4ca1af);
-            --card-bg: rgba(255, 255, 255, 0.85);
-            --card-border: rgba(255, 255, 255, 0.35);
-            --text-primary: #182028;
+            --pokedex-red: #d62828;
+            --pokedex-deep: #8d1125;
+            --pokedex-dark: #0a0f1a;
+            --screen-bg: #14291f;
+            --screen-glow: rgba(97, 255, 180, 0.3);
+            --screen-text: #c9ffe5;
+            --scene-gradient: linear-gradient(135deg, #d62828, #8d1125);
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --card-border: rgba(255, 255, 255, 0.45);
+            --text-primary: #1d202c;
             --text-secondary: #4b5765;
             --accent: #ffcb05;
-            --danger: #d9534f;
+            --danger: #ff6b6b;
             --success: #3fb47c;
         }
 
@@ -28,12 +34,12 @@
             padding: 0;
             font-family: 'Roboto', sans-serif;
             color: var(--text-primary);
-            background: #0c1116;
+            background: var(--pokedex-dark);
             min-height: 100%;
         }
 
         body {
-            background: radial-gradient(circle at top, rgba(255,255,255,0.05) 0%, rgba(12,17,22,1) 55%);
+            background: radial-gradient(circle at top, rgba(255, 255, 255, 0.08) 0%, rgba(10, 15, 26, 1) 60%);
         }
 
         .app-shell {
@@ -55,91 +61,214 @@
         .scene-overlay {
             position: fixed;
             inset: 0;
-            background: linear-gradient(180deg, rgba(10, 14, 18, 0.1) 0%, rgba(10, 14, 18, 0.7) 70%);
+            background: linear-gradient(200deg, rgba(214, 40, 40, 0.2) 0%, rgba(10, 15, 26, 0.85) 60%);
             z-index: -1;
         }
 
         header {
-            padding: 32px 48px 24px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
+            padding: 36px 48px 24px;
             color: #fff;
         }
 
         header h1 {
             font-family: 'Rajdhani', sans-serif;
             font-weight: 700;
-            font-size: clamp(36px, 4vw, 52px);
-            letter-spacing: 1px;
+            font-size: clamp(32px, 3.6vw, 48px);
+            letter-spacing: 3px;
             margin: 0;
-            text-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
+            text-transform: uppercase;
         }
 
-        .clock-meta {
+        .pokedex-frame {
+            position: relative;
+            padding: clamp(24px, 4vw, 36px);
+            border-radius: 32px;
+            background: linear-gradient(155deg, rgba(214, 40, 40, 0.96), rgba(94, 9, 21, 0.96));
+            border: 3px solid rgba(27, 6, 12, 0.7);
+            box-shadow: 0 28px 46px rgba(0, 0, 0, 0.45), inset 0 2px 12px rgba(255, 255, 255, 0.18);
+        }
+
+        .pokedex-top {
             display: flex;
-            flex-wrap: wrap;
-            gap: 24px;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: clamp(18px, 3vw, 26px);
+        }
+
+        .status-lights {
+            display: flex;
+            gap: 12px;
             align-items: center;
         }
 
-        .clock-display {
+        .status-lights .light {
+            width: clamp(26px, 3vw, 34px);
+            height: clamp(26px, 3vw, 34px);
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0) 55%), #5bc0be;
+            border: 3px solid rgba(10, 10, 10, 0.65);
+            box-shadow: 0 0 18px rgba(91, 192, 190, 0.6);
+        }
+
+        .status-lights .light.primary {
+            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0) 55%), #63d7ff;
+            box-shadow: 0 0 24px rgba(121, 229, 255, 0.8);
+        }
+
+        .status-lights .light.secondary {
+            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0) 55%), #ffe066;
+            box-shadow: 0 0 18px rgba(255, 224, 102, 0.6);
+        }
+
+        .status-lights .light.tertiary {
+            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0) 55%), #2dd881;
+            box-shadow: 0 0 18px rgba(45, 216, 129, 0.55);
+        }
+
+        .speaker-grill {
+            display: grid;
+            grid-auto-flow: column;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: 999px;
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(0, 0, 0, 0.65);
+        }
+
+        .speaker-grill span {
+            width: 10px;
+            height: 18px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(0, 0, 0, 0.65));
+            border-radius: 4px;
+        }
+
+        .pokedex-screen {
+            position: relative;
+            border-radius: 24px;
+            padding: clamp(22px, 3.6vw, 30px);
+            background: linear-gradient(160deg, rgba(255, 255, 255, 0.08), rgba(0, 0, 0, 0.35)), var(--screen-bg);
+            border: 2px solid rgba(0, 0, 0, 0.6);
+            box-shadow: inset 0 0 28px rgba(0, 0, 0, 0.45), 0 18px 36px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+            margin-bottom: clamp(18px, 3vw, 26px);
+        }
+
+        .screen-glare {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 45%;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0));
+            pointer-events: none;
+        }
+
+        .screen-content {
+            position: relative;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: clamp(16px, 3vw, 24px);
+        }
+
+        .clock-label {
+            font-family: 'Rajdhani', sans-serif;
+            letter-spacing: 4px;
+            font-size: 14px;
+            text-transform: uppercase;
+            opacity: 0.8;
+        }
+
+        .pokedex-footer {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            color: rgba(255, 255, 255, 0.92);
+        }
+
+        .subtitle {
+            margin: 0;
+            font-size: 16px;
+            letter-spacing: 0.8px;
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        .clock-display {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            align-items: flex-start;
+            color: var(--screen-text);
+            text-shadow: 0 0 8px rgba(55, 255, 173, 0.4);
         }
 
         .clock-display time {
-            font-family: 'Rajdhani', sans-serif;
-            font-size: clamp(38px, 4.2vw, 58px);
-            font-weight: 700;
-            letter-spacing: 2px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: clamp(48px, 6vw, 72px);
+            font-weight: 400;
+            letter-spacing: 6px;
         }
 
         .clock-display span {
+            font-family: 'Rajdhani', sans-serif;
             font-size: 18px;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
             opacity: 0.85;
         }
 
         .slot-chip {
             display: inline-flex;
             align-items: center;
-            padding: 6px 14px;
+            justify-content: center;
+            padding: 8px 18px;
             border-radius: 999px;
-            font-weight: 600;
-            font-size: 14px;
+            font-weight: 700;
+            font-size: 13px;
             text-transform: uppercase;
-            letter-spacing: 1.5px;
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(4px);
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.05));
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: inset 0 1px 6px rgba(255, 255, 255, 0.2), 0 10px 20px rgba(0, 0, 0, 0.35);
+            color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(6px);
         }
 
-        nav {
+        .pokedex-screen .slot-chip {
+            align-self: flex-start;
+        }
+
+        .encounter-details .slot-chip {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.25), rgba(255, 255, 255, 0.8));
+            border-color: rgba(0, 0, 0, 0.15);
+            color: #1d202c;
+            box-shadow: inset 0 1px 4px rgba(255, 255, 255, 0.6), 0 6px 16px rgba(0, 0, 0, 0.12);
+        }
+
+        .pokedex-nav {
             display: flex;
-            gap: 12px;
-            padding: 0 48px 18px;
+            gap: 16px;
+            padding: 0 48px 28px;
         }
 
-        nav button {
-            padding: 12px 24px;
+        .pokedex-nav button {
+            flex: 0 0 auto;
+            padding: 14px 28px;
             border: none;
-            border-radius: 999px;
-            font-weight: 600;
+            border-radius: 14px;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
             cursor: pointer;
-            color: rgba(255,255,255,0.85);
-            background: rgba(255,255,255,0.15);
-            transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
-            backdrop-filter: blur(4px);
+            color: rgba(20, 24, 32, 0.9);
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(255, 230, 100, 0.9));
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
-        nav button.active, nav button:hover {
-            color: #111;
-            background: var(--accent);
-            box-shadow: 0 14px 24px rgba(0, 0, 0, 0.25);
-            transform: translateY(-1px);
+        .pokedex-nav button.active,
+        .pokedex-nav button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 18px 28px rgba(0, 0, 0, 0.4);
         }
 
         main {
@@ -176,18 +305,28 @@
         }
 
         .card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
+            position: relative;
+            background: linear-gradient(165deg, rgba(255, 255, 255, 0.95), rgba(235, 242, 255, 0.8));
+            border: 1px solid rgba(16, 24, 32, 0.15);
             border-radius: 24px;
-            padding: 24px;
-            box-shadow: 0 30px 60px rgba(15, 26, 38, 0.25);
-            backdrop-filter: blur(14px);
+            padding: 28px;
+            box-shadow: 0 26px 46px rgba(10, 16, 26, 0.25);
+            backdrop-filter: blur(10px);
+        }
+
+        .card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            pointer-events: none;
         }
 
         .card h2 {
             margin: 0 0 12px;
-            font-size: 20px;
-            letter-spacing: 0.6px;
+            font-size: 18px;
+            letter-spacing: 1.2px;
             text-transform: uppercase;
             font-weight: 700;
             color: var(--text-secondary);
@@ -202,21 +341,107 @@
             position: relative;
             min-height: 340px;
             border-radius: 20px;
-            background: linear-gradient(160deg, rgba(255,255,255,0.6), rgba(255,255,255,0));
+            background: radial-gradient(circle at 30% 20%, rgba(97, 255, 180, 0.15), transparent 70%), rgba(12, 28, 24, 0.9);
             display: flex;
             align-items: center;
             justify-content: center;
             margin-bottom: 24px;
+            box-shadow: inset 0 0 35px rgba(0, 0, 0, 0.65);
+        }
+
+        .encounter-hero::after {
+            content: "";
+            position: absolute;
+            inset: 12px;
+            border-radius: 16px;
+            border: 1px dashed rgba(201, 255, 229, 0.3);
+            pointer-events: none;
         }
 
         .encounter-hero img {
-            width: min(260px, 60%);
-            filter: drop-shadow(0 20px 30px rgba(0,0,0,0.35));
+            width: min(260px, 62%);
+            filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.45));
             transition: transform 0.5s ease;
+            z-index: 1;
         }
 
         .encounter-hero img:hover {
             transform: scale(1.05) translateY(-6px);
+        }
+
+        .encounter-hero.empty {
+            background: radial-gradient(circle at 60% 40%, rgba(255, 255, 255, 0.08), transparent 70%), rgba(10, 28, 18, 0.95);
+        }
+
+        .grass-field {
+            position: absolute;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            display: flex;
+            justify-content: space-between;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            z-index: 0;
+        }
+
+        .grass-field.active {
+            opacity: 1;
+        }
+
+        .grass-blade {
+            width: 12px;
+            height: 90px;
+            border-radius: 999px 999px 0 0;
+            background: linear-gradient(180deg, rgba(56, 176, 0, 0.8), rgba(16, 70, 0, 0.9));
+            animation: grass-sway 2.6s ease-in-out infinite;
+            transform-origin: bottom center;
+            filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.45));
+        }
+
+        .grass-blade:nth-child(odd) {
+            height: 70px;
+            animation-duration: 2.2s;
+        }
+
+        .grass-blade:nth-child(even) {
+            height: 110px;
+            animation-duration: 3s;
+        }
+
+        .no-encounter-label {
+            position: absolute;
+            bottom: 34%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 8px 16px;
+            background: rgba(0, 0, 0, 0.55);
+            border-radius: 999px;
+            color: rgba(201, 255, 229, 0.9);
+            letter-spacing: 2px;
+            font-size: 12px;
+            text-transform: uppercase;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            z-index: 1;
+        }
+
+        .no-encounter-label.active {
+            opacity: 1;
+        }
+
+        @keyframes grass-sway {
+            0% {
+                transform: rotate(-4deg);
+            }
+            50% {
+                transform: rotate(4deg);
+            }
+            100% {
+                transform: rotate(-4deg);
+            }
         }
 
         .encounter-details {
@@ -235,7 +460,9 @@
             font-size: 13px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            background: rgba(24,32,40,0.08);
+            background: rgba(24, 48, 40, 0.18);
+            border: 1px solid rgba(97, 255, 180, 0.35);
+            color: #104029;
         }
 
         .encounter-stats {
@@ -266,16 +493,20 @@
 
         .ball-buttons button {
             flex: 1;
-            min-width: 140px;
-            padding: 14px 16px;
+            min-width: 160px;
+            padding: 14px 18px;
             border-radius: 16px;
             border: 0;
             cursor: pointer;
             font-weight: 700;
-            letter-spacing: 0.6px;
+            letter-spacing: 1px;
             text-transform: uppercase;
             color: #fff;
             transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
 
         .ball-buttons button[data-ball="pokeBalls"] {
@@ -302,6 +533,13 @@
         .ball-buttons button:not(:disabled):hover {
             transform: translateY(-2px);
             box-shadow: 0 14px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .ball-sprite {
+            width: 28px;
+            height: 28px;
+            image-rendering: pixelated;
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.4));
         }
 
         .shiny-rate {
@@ -468,17 +706,26 @@
         }
 
         @media (max-width: 768px) {
-            header, nav, main, footer {
+            header, .pokedex-nav, main, footer {
                 padding-left: 20px;
                 padding-right: 20px;
             }
 
+            .pokedex-frame {
+                padding: 24px;
+            }
+
             .encounter-hero {
-                min-height: 280px;
+                min-height: 260px;
             }
 
             .ball-buttons button {
-                min-width: 120px;
+                min-width: 130px;
+            }
+
+            .ball-sprite {
+                width: 24px;
+                height: 24px;
             }
         }
     </style>
@@ -487,20 +734,36 @@
     <div class="scene-backdrop" aria-hidden="true"></div>
     <div class="scene-overlay" aria-hidden="true"></div>
     <div class="app-shell">
-        <header>
-            <div>
-                <h1>Pokémon Timekeeper</h1>
-                <p class="subtitle">Track time, earn supplies, and befriend the Pokémon that appear with each passing hour.</p>
-            </div>
-            <div class="clock-meta">
-                <div class="clock-display">
-                    <time id="clock-time">00:00:00</time>
-                    <span id="clock-date">—</span>
+        <header class="pokedex-header">
+            <div class="pokedex-frame">
+                <div class="pokedex-top">
+                    <div class="status-lights" aria-hidden="true">
+                        <span class="light primary"></span>
+                        <span class="light secondary"></span>
+                        <span class="light tertiary"></span>
+                    </div>
+                    <div class="speaker-grill" aria-hidden="true">
+                        <span></span><span></span><span></span><span></span><span></span>
+                    </div>
                 </div>
-                <div class="slot-chip" id="slot-label">Awaiting time slot…</div>
+                <div class="pokedex-screen">
+                    <div class="screen-glare" aria-hidden="true"></div>
+                    <div class="screen-content">
+                        <div class="clock-display">
+                            <div class="clock-label">Current Time</div>
+                            <time id="clock-time">00:00:00</time>
+                            <span id="clock-date">—</span>
+                        </div>
+                        <div class="slot-chip" id="slot-label">Awaiting time slot…</div>
+                    </div>
+                </div>
+                <div class="pokedex-footer">
+                    <h1>Pokémon Timekeeper</h1>
+                    <p class="subtitle">Track real-world time as though you're scanning the Pokédex for daily encounters.</p>
+                </div>
             </div>
         </header>
-        <nav>
+        <nav class="pokedex-nav">
             <button class="active" data-target="adventure">Adventure</button>
             <button data-target="collection">Collection</button>
         </nav>
@@ -509,7 +772,17 @@
                 <div class="encounter-area">
                     <article class="card encounter-card">
                         <div class="encounter-hero">
+                            <div class="grass-field" id="grass-field" aria-hidden="true">
+                                <span class="grass-blade"></span>
+                                <span class="grass-blade"></span>
+                                <span class="grass-blade"></span>
+                                <span class="grass-blade"></span>
+                                <span class="grass-blade"></span>
+                                <span class="grass-blade"></span>
+                                <span class="grass-blade"></span>
+                            </div>
                             <img id="pokemon-art" src="" alt="Encountered Pokémon" loading="lazy">
+                            <div class="no-encounter-label" id="no-encounter-label">Grass is rustling…</div>
                         </div>
                         <div class="encounter-details">
                             <div class="slot-chip" id="encounter-slot">—</div>
@@ -561,9 +834,18 @@
                         <div class="catch-controls">
                             <h2>Attempt a Catch</h2>
                             <div class="ball-buttons">
-                                <button data-ball="pokeBalls">Poké Ball</button>
-                                <button data-ball="greatBalls">Great Ball</button>
-                                <button data-ball="ultraBalls">Ultra Ball</button>
+                                <button data-ball="pokeBalls">
+                                    <img class="ball-sprite" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png" alt="" aria-hidden="true">
+                                    <span>Poké Ball</span>
+                                </button>
+                                <button data-ball="greatBalls">
+                                    <img class="ball-sprite" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/great-ball.png" alt="" aria-hidden="true">
+                                    <span>Great Ball</span>
+                                </button>
+                                <button data-ball="ultraBalls">
+                                    <img class="ball-sprite" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png" alt="" aria-hidden="true">
+                                    <span>Ultra Ball</span>
+                                </button>
                             </div>
                         </div>
                     </article>
@@ -744,17 +1026,46 @@
         }
 
         function renderEncounter() {
+            const hero = document.querySelector('.encounter-hero');
+            const art = document.getElementById('pokemon-art');
+            const grass = document.getElementById('grass-field');
+            const grassLabel = document.getElementById('no-encounter-label');
+            const nameEl = document.getElementById('pokemon-name');
+            const descriptionEl = document.getElementById('pokemon-description');
+            const temperamentEl = document.getElementById('pokemon-temperament');
+            const difficultyEl = document.getElementById('pokemon-difficulty');
+            const bestBallEl = document.getElementById('pokemon-best-ball');
+            const typesContainer = document.getElementById('pokemon-types');
+
             if (!currentPokemon) {
-                document.getElementById('pokemon-name').textContent = 'No Pokémon';
+                nameEl.textContent = 'Scanning the grass…';
+                descriptionEl.textContent = 'The tall grass rustles, but no Pokémon has revealed itself yet.';
+                temperamentEl.textContent = '—';
+                difficultyEl.textContent = '—';
+                bestBallEl.textContent = '—';
+                typesContainer.innerHTML = '';
+                if (hero) hero.classList.add('empty');
+                if (art) {
+                    art.hidden = true;
+                    art.removeAttribute('src');
+                    art.alt = 'Awaiting encounter';
+                }
+                if (grass) grass.classList.add('active');
+                if (grassLabel) grassLabel.classList.add('active');
                 return;
             }
-            const { name, types, description, temperament, difficulty, bestBall, id, shiny } = currentPokemon;
-            const art = document.getElementById('pokemon-art');
-            art.src = getArtUrl(id, shiny);
-            art.alt = shiny ? `Shiny ${name}` : name;
-            document.getElementById('pokemon-name').textContent = shiny ? `✨ Shiny ${name}` : name;
 
-            const typesContainer = document.getElementById('pokemon-types');
+            const { name, types, description, temperament, difficulty, bestBall, id, shiny } = currentPokemon;
+            if (hero) hero.classList.remove('empty');
+            if (grass) grass.classList.remove('active');
+            if (grassLabel) grassLabel.classList.remove('active');
+            if (art) {
+                art.hidden = false;
+                art.src = getArtUrl(id, shiny);
+                art.alt = shiny ? `Shiny ${name}` : name;
+            }
+            nameEl.textContent = shiny ? `✨ Shiny ${name}` : name;
+
             typesContainer.innerHTML = '';
             types.forEach(type => {
                 const span = document.createElement('span');
@@ -763,10 +1074,10 @@
                 typesContainer.appendChild(span);
             });
 
-            document.getElementById('pokemon-description').textContent = description;
-            document.getElementById('pokemon-temperament').textContent = temperament;
-            document.getElementById('pokemon-difficulty').textContent = difficulty;
-            document.getElementById('pokemon-best-ball').textContent = bestBall;
+            descriptionEl.textContent = description;
+            temperamentEl.textContent = temperament;
+            difficultyEl.textContent = difficulty;
+            bestBallEl.textContent = bestBall;
         }
 
         function accrueResources() {
@@ -952,14 +1263,27 @@
 
         function refreshEncounter(force = false) {
             if (!currentSlot) return;
+            const hadEncounter = Boolean(currentPokemon);
             if (!force && currentPokemon && Math.random() > 0.4) {
+                return;
+            }
+            const noEncounterChance = force ? 0.25 : 0.4;
+            if (Math.random() < noEncounterChance) {
+                currentPokemon = null;
+                renderEncounter();
+                if (force || hadEncounter) {
+                    recordLog('The Pokédex hears only rustling grass for now.', 'info');
+                    renderLog();
+                }
                 return;
             }
             const encounter = getRandomEncounter(currentSlot.key);
             if (encounter) {
                 currentPokemon = { ...encounter, shiny: false };
-                renderEncounter();
+            } else {
+                currentPokemon = null;
             }
+            renderEncounter();
         }
 
         function updateClock() {
