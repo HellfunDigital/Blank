@@ -280,6 +280,12 @@
             100% { transform: translateX(-20%) scaleX(1); }
         }
 
+        @keyframes grass-sway {
+            0% { transform: rotate(-4deg) scaleX(1); }
+            50% { transform: rotate(4deg) scaleX(0.96); }
+            100% { transform: rotate(-4deg) scaleX(1); }
+        }
+
         .clock-label {
             font-family: 'Rajdhani', sans-serif;
             letter-spacing: 4px;
@@ -326,6 +332,247 @@
             opacity: 0.85;
         }
 
+        .clock-actions {
+            margin-top: clamp(12px, 2vw, 18px);
+        }
+
+        .clock-actions .ball-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .clock-actions .ball-buttons button {
+            flex: 1 1 120px;
+            min-width: 120px;
+            background: rgba(8, 36, 24, 0.8);
+            border-color: rgba(97, 255, 180, 0.35);
+            color: rgba(192, 255, 226, 0.95);
+        }
+
+        .clock-actions .ball-buttons button:not(:disabled):hover {
+            background: rgba(18, 64, 44, 0.9);
+        }
+
+        .clock-actions .ball-count {
+            font-size: 18px;
+        }
+
+        .encounter-viewport {
+            position: relative;
+            border-radius: 20px;
+            background: rgba(7, 28, 20, 0.82);
+            border: 1px solid rgba(97, 255, 180, 0.28);
+            box-shadow: inset 0 0 24px rgba(0, 0, 0, 0.55);
+            padding: clamp(12px, 2.2vw, 18px);
+        }
+
+        .encounter-viewport .screen-pokemon {
+            margin: 0;
+            width: 100%;
+        }
+
+        .grass-field {
+            position: absolute;
+            bottom: clamp(16px, 2.8vw, 22px);
+            left: 8%;
+            right: 8%;
+            display: flex;
+            justify-content: space-between;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .grass-field .blade {
+            width: clamp(18px, 3vw, 26px);
+            height: clamp(38px, 8vw, 68px);
+            background: linear-gradient(180deg, rgba(48, 190, 120, 0.9), rgba(20, 70, 40, 0.9));
+            border-radius: 999px 999px 12px 12px;
+            transform-origin: bottom center;
+            animation: grass-sway 3.5s ease-in-out infinite;
+            opacity: 0.85;
+            filter: drop-shadow(0 6px 6px rgba(0, 0, 0, 0.35));
+        }
+
+        .grass-field .blade:nth-child(2) {
+            animation-delay: -1.2s;
+            height: clamp(32px, 6.5vw, 56px);
+        }
+
+        .grass-field .blade:nth-child(3) {
+            animation-delay: -2.4s;
+            height: clamp(40px, 7vw, 62px);
+        }
+
+        .grass-field .blade:nth-child(4) {
+            animation-delay: -1.8s;
+            height: clamp(34px, 6vw, 54px);
+        }
+
+        .grass-field .blade:nth-child(5) {
+            animation-delay: -0.9s;
+            height: clamp(36px, 6.6vw, 58px);
+        }
+
+        .screen-summary {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            background: rgba(8, 36, 24, 0.6);
+            border-radius: 16px;
+            padding: 16px;
+            border: 1px solid rgba(97, 255, 180, 0.22);
+            box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.35);
+        }
+
+        .screen-summary h2 {
+            margin: 0;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 18px;
+            letter-spacing: 2px;
+            color: rgba(210, 255, 238, 0.95);
+            text-transform: uppercase;
+        }
+
+        .screen-summary p {
+            margin: 0;
+            font-size: 15px;
+            color: rgba(192, 255, 226, 0.82);
+            line-height: 1.5;
+        }
+
+        .screen-menu {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .screen-menu button {
+            flex: 1 1 140px;
+            border: 1px solid rgba(97, 255, 180, 0.35);
+            background: rgba(8, 36, 24, 0.78);
+            border-radius: 14px;
+            padding: 10px 16px;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 15px;
+            letter-spacing: 2px;
+            color: rgba(210, 255, 238, 0.85);
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        }
+
+        .screen-menu button:not(:disabled):hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 26px rgba(0, 0, 0, 0.35);
+            background: rgba(18, 64, 44, 0.88);
+        }
+
+        .screen-log {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding: 12px 16px;
+            border-radius: 14px;
+            background: rgba(8, 36, 24, 0.45);
+            border: 1px solid rgba(97, 255, 180, 0.18);
+        }
+
+        .screen-log .log-label {
+            font-size: 12px;
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+            color: rgba(210, 255, 238, 0.7);
+        }
+
+        .screen-log .log-entry {
+            margin: 0;
+            font-size: 14px;
+            color: rgba(192, 255, 226, 0.85);
+            line-height: 1.4;
+        }
+
+        body.modal-open {
+            overflow: hidden;
+        }
+
+        .modal {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 32px;
+            background: rgba(6, 14, 12, 0.75);
+            backdrop-filter: blur(6px);
+            z-index: 10;
+        }
+
+        .modal.open {
+            display: flex;
+        }
+
+        .modal-backdrop {
+            position: absolute;
+            inset: 0;
+        }
+
+        .modal-panel {
+            position: relative;
+            max-width: min(960px, 90vw);
+            width: 100%;
+            max-height: min(640px, 90vh);
+            overflow: hidden auto;
+            border-radius: 24px;
+            background: rgba(12, 40, 30, 0.92);
+            border: 1px solid rgba(97, 255, 180, 0.24);
+            box-shadow: 0 28px 48px rgba(0, 0, 0, 0.45), inset 0 0 24px rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 20px 24px 16px;
+            background: linear-gradient(135deg, rgba(18, 80, 58, 0.65), rgba(8, 32, 24, 0.95));
+            border-bottom: 1px solid rgba(97, 255, 180, 0.18);
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 20px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: rgba(210, 255, 238, 0.95);
+        }
+
+        .modal-body {
+            padding: 24px;
+            color: rgba(210, 255, 238, 0.92);
+        }
+
+        .modal-close {
+            border: none;
+            background: rgba(8, 36, 24, 0.8);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            color: rgba(210, 255, 238, 0.9);
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+            font-size: 22px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .modal-close:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.35);
+        }
+
         .slot-chip {
             display: inline-flex;
             align-items: center;
@@ -354,74 +601,17 @@
             box-shadow: inset 0 1px 4px rgba(255, 255, 255, 0.6), 0 6px 16px rgba(0, 0, 0, 0.12);
         }
 
-        .pokedex-nav {
-            display: flex;
-            gap: 16px;
-            padding: 0 48px 28px;
-        }
-
-        .pokedex-nav button {
-            flex: 0 0 auto;
-            padding: 14px 28px;
-            border: none;
-            border-radius: 14px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            cursor: pointer;
-            color: rgba(20, 24, 32, 0.9);
-            background: linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(255, 230, 100, 0.9));
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.6);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .pokedex-nav button.active,
-        .pokedex-nav button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 18px 28px rgba(0, 0, 0, 0.4);
-        }
-
-        main {
-            flex: 1;
-            padding: 0 48px 48px;
-            display: grid;
-        }
-
-        section[data-section] {
-            display: none;
-            animation: fade-in 0.45s ease;
-        }
-
-        section[data-section].active {
-            display: block;
-        }
-
-        @keyframes fade-in {
-            from {
-                opacity: 0;
-                transform: translateY(12px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
         .encounter-area {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 24px;
-            align-items: stretch;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+            align-items: start;
         }
 
         .card {
             position: relative;
-            background: linear-gradient(165deg, rgba(255, 255, 255, 0.95), rgba(235, 242, 255, 0.8));
-            border: 1px solid rgba(16, 24, 32, 0.15);
-            border-radius: 24px;
-            padding: 28px;
-            box-shadow: 0 26px 46px rgba(10, 16, 26, 0.25);
-            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: clamp(18px, 3vw, 24px);
         }
 
         .card::before {
@@ -429,7 +619,7 @@
             position: absolute;
             inset: 0;
             border-radius: inherit;
-            border: 1px solid rgba(255, 255, 255, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.14);
             pointer-events: none;
         }
 
@@ -439,7 +629,7 @@
             letter-spacing: 1.2px;
             text-transform: uppercase;
             font-weight: 700;
-            color: var(--text-secondary);
+            color: rgba(224, 255, 244, 0.9);
         }
 
         .encounter-card {
@@ -487,6 +677,52 @@
             display: flex;
             flex-direction: column;
             gap: 16px;
+        }
+
+        .modal-body .card {
+            background: rgba(12, 50, 35, 0.65);
+            border: 1px solid rgba(97, 255, 180, 0.26);
+            color: rgba(192, 255, 226, 0.92);
+            box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.35);
+        }
+
+        .modal-body .card::before {
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .modal-body .resource-entry {
+            border-color: rgba(97, 255, 180, 0.18);
+            background: rgba(12, 48, 34, 0.45);
+        }
+
+        .modal-body .resource-entry:hover {
+            background: rgba(20, 80, 55, 0.35);
+        }
+
+        .modal-body .resource-count {
+            color: rgba(224, 255, 244, 0.95);
+        }
+
+        .modal-body .resource-name {
+            color: rgba(210, 255, 238, 0.95);
+        }
+
+        .modal-body .resource-timer {
+            color: rgba(170, 235, 210, 0.75);
+        }
+
+        .modal-body .catch-controls .ball-buttons button {
+            background: rgba(8, 36, 24, 0.85);
+            border-color: rgba(97, 255, 180, 0.35);
+        }
+
+        .modal-body .catch-controls .ball-buttons button:not(:disabled):hover {
+            background: rgba(20, 74, 52, 0.9);
+        }
+
+        .modal-body .log-card li {
+            background: rgba(12, 48, 34, 0.6);
+            color: rgba(210, 255, 238, 0.9);
         }
 
         .ball-buttons {
@@ -704,7 +940,7 @@
         }
 
         @media (max-width: 768px) {
-            header, .pokedex-nav, main, footer {
+            header, footer {
                 padding-left: 20px;
                 padding-right: 20px;
             }
@@ -716,6 +952,24 @@
             .screen-pokemon {
                 min-height: 200px;
                 padding: 24px 12px 16px;
+            }
+
+            .encounter-viewport {
+                padding: 12px;
+            }
+
+            .screen-menu {
+                width: 100%;
+            }
+
+            .screen-menu button {
+                flex: 1 1 45%;
+                min-width: 0;
+            }
+
+            .clock-actions .ball-buttons button {
+                flex: 1 1 45%;
+                min-width: 0;
             }
 
             .ball-buttons button {
@@ -756,77 +1010,22 @@
                             </div>
                             <div class="slot-chip" id="slot-label">Awaiting time slot…</div>
                         </div>
-                        <div class="screen-pokemon">
-                            <div class="vhs-overlay" aria-hidden="true"></div>
-                            <img id="screen-pokemon-art" src="" alt="Encountered Pokémon" hidden>
-                            <div class="screen-placeholder" id="screen-placeholder">Tuning the feed for a wild Pokémon…</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="pokedex-footer">
-                    <h1>Pokémon Timekeeper</h1>
-                    <p class="subtitle">Track real-world time as though you're scanning the Pokédex for daily encounters.</p>
-                </div>
-            </div>
-        </header>
-        <nav class="pokedex-nav">
-            <button class="active" data-target="adventure">Adventure</button>
-            <button data-target="collection">Collection</button>
-        </nav>
-        <main>
-            <section id="adventure" data-section class="active">
-                <div class="encounter-area">
-                    <article class="card encounter-card">
-                        <div class="encounter-details">
-                            <div class="slot-chip" id="encounter-slot">—</div>
-                            <h2 id="pokemon-name">—</h2>
-                            <div id="pokemon-types" class="type-row"></div>
-                            <p id="pokemon-description" class="encounter-description">Stay tuned to the screen to meet the Pokémon that matches this time of day.</p>
-                            <div class="encounter-stats">
-                                <div>
-                                    <strong>Temperament</strong>
-                                    <div id="pokemon-temperament">—</div>
+                        <div class="encounter-viewport" aria-live="polite">
+                            <div class="screen-pokemon">
+                                <div class="vhs-overlay" aria-hidden="true"></div>
+                                <img id="screen-pokemon-art" src="" alt="Encountered Pokémon" hidden>
+                                <div class="grass-field" id="grass-field" aria-hidden="true">
+                                    <span class="blade"></span>
+                                    <span class="blade"></span>
+                                    <span class="blade"></span>
+                                    <span class="blade"></span>
+                                    <span class="blade"></span>
                                 </div>
-                                <div>
-                                    <strong>Catch Difficulty</strong>
-                                    <div id="pokemon-difficulty">—</div>
-                                </div>
-                                <div>
-                                    <strong>Best Ball</strong>
-                                    <div id="pokemon-best-ball">—</div>
-                                </div>
+                                <div class="screen-placeholder" id="screen-placeholder">Static only… keep watching.</div>
                             </div>
                         </div>
-                    </article>
-                    <article class="card inventory-card">
-                        <h2>Trainer Supply Cache</h2>
-                        <p class="shiny-rate">Shiny chance: 1 in 64 throws. Supplies refresh in real time even while you're away.</p>
-                        <div class="resource-list">
-                            <div class="resource-entry" data-resource="pokeBalls">
-                                <div class="resource-meta">
-                                    <span class="resource-name">Poké Balls</span>
-                                    <span class="resource-timer">+1 every minute · Next in <span data-timer="pokeBalls">60s</span></span>
-                                </div>
-                                <span class="resource-count" data-count="pokeBalls">0</span>
-                            </div>
-                            <div class="resource-entry" data-resource="greatBalls">
-                                <div class="resource-meta">
-                                    <span class="resource-name">Great Balls</span>
-                                    <span class="resource-timer">+2 every hour · Next in <span data-timer="greatBalls">1h</span></span>
-                                </div>
-                                <span class="resource-count" data-count="greatBalls">0</span>
-                            </div>
-                            <div class="resource-entry" data-resource="ultraBalls">
-                                <div class="resource-meta">
-                                    <span class="resource-name">Ultra Balls</span>
-                                    <span class="resource-timer">+1 every day · Next in <span data-timer="ultraBalls">1d</span></span>
-                                </div>
-                                <span class="resource-count" data-count="ultraBalls">0</span>
-                            </div>
-                        </div>
-                        <div class="catch-controls">
-                            <h2>Attempt a Catch</h2>
-                            <div class="ball-buttons">
+                        <div class="clock-actions">
+                            <div class="ball-buttons" aria-label="Clock quick throw controls">
                                 <button data-ball="pokeBalls" aria-label="Throw a Poké Ball">
                                     <img class="ball-sprite" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png" alt="" aria-hidden="true">
                                     <span class="ball-count" data-count="pokeBalls">0</span>
@@ -841,27 +1040,141 @@
                                 </button>
                             </div>
                         </div>
-                    </article>
+                        <div class="screen-summary" aria-live="polite">
+                            <h2 id="screen-summary-title">Awaiting signal</h2>
+                            <p id="screen-summary-text">Static only… keep watching.</p>
+                        </div>
+                        <div class="screen-menu" role="group" aria-label="Open additional panels">
+                            <button type="button" data-modal-target="modal-adventure">Adventure</button>
+                            <button type="button" data-modal-target="modal-collection">Collection</button>
+                            <button type="button" data-modal-target="modal-log">Log</button>
+                        </div>
+                        <div class="screen-log" aria-live="polite">
+                            <span class="log-label">Latest Event</span>
+                            <p class="log-entry" id="log-preview-text">The log is quiet… venture out to make history!</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="pokedex-footer">
+                    <h1>Pokémon Timekeeper</h1>
+                    <p class="subtitle">Track real-world time as though you're scanning the Pokédex for daily encounters.</p>
+                </div>
+            </div>
+        </header>
+        <div class="modal" id="modal-adventure" hidden aria-hidden="true">
+            <div class="modal-backdrop" data-modal-dismiss></div>
+            <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modal-adventure-title" tabindex="-1">
+                <div class="modal-header">
+                    <h2 id="modal-adventure-title">Adventure</h2>
+                    <button type="button" class="modal-close" data-modal-close aria-label="Close Adventure panel">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="encounter-area">
+                        <article class="card encounter-card">
+                            <div class="encounter-details">
+                                <div class="slot-chip" id="encounter-slot">—</div>
+                                <h2 id="pokemon-name">—</h2>
+                                <div id="pokemon-types" class="type-row"></div>
+                                <p id="pokemon-description" class="encounter-description">Stay tuned to the screen to meet the Pokémon that matches this time of day.</p>
+                                <div class="encounter-stats">
+                                    <div>
+                                        <strong>Temperament</strong>
+                                        <div id="pokemon-temperament">—</div>
+                                    </div>
+                                    <div>
+                                        <strong>Catch Difficulty</strong>
+                                        <div id="pokemon-difficulty">—</div>
+                                    </div>
+                                    <div>
+                                        <strong>Best Ball</strong>
+                                        <div id="pokemon-best-ball">—</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="card inventory-card">
+                            <h2>Trainer Supply Cache</h2>
+                            <p class="shiny-rate">Shiny chance: 1 in 64 throws. Supplies refresh in real time even while you're away.</p>
+                            <div class="resource-list">
+                                <div class="resource-entry" data-resource="pokeBalls">
+                                    <div class="resource-meta">
+                                        <span class="resource-name">Poké Balls</span>
+                                        <span class="resource-timer">+1 every minute · Next in <span data-timer="pokeBalls">60s</span></span>
+                                    </div>
+                                    <span class="resource-count" data-count="pokeBalls">0</span>
+                                </div>
+                                <div class="resource-entry" data-resource="greatBalls">
+                                    <div class="resource-meta">
+                                        <span class="resource-name">Great Balls</span>
+                                        <span class="resource-timer">+2 every hour · Next in <span data-timer="greatBalls">1h</span></span>
+                                    </div>
+                                    <span class="resource-count" data-count="greatBalls">0</span>
+                                </div>
+                                <div class="resource-entry" data-resource="ultraBalls">
+                                    <div class="resource-meta">
+                                        <span class="resource-name">Ultra Balls</span>
+                                        <span class="resource-timer">+1 every day · Next in <span data-timer="ultraBalls">1d</span></span>
+                                    </div>
+                                    <span class="resource-count" data-count="ultraBalls">0</span>
+                                </div>
+                            </div>
+                            <div class="catch-controls">
+                                <h2>Attempt a Catch</h2>
+                                <div class="ball-buttons">
+                                    <button data-ball="pokeBalls" aria-label="Throw a Poké Ball">
+                                        <img class="ball-sprite" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png" alt="" aria-hidden="true">
+                                        <span class="ball-count" data-count="pokeBalls">0</span>
+                                    </button>
+                                    <button data-ball="greatBalls" aria-label="Throw a Great Ball">
+                                        <img class="ball-sprite" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/great-ball.png" alt="" aria-hidden="true">
+                                        <span class="ball-count" data-count="greatBalls">0</span>
+                                    </button>
+                                    <button data-ball="ultraBalls" aria-label="Throw an Ultra Ball">
+                                        <img class="ball-sprite" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png" alt="" aria-hidden="true">
+                                        <span class="ball-count" data-count="ultraBalls">0</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal" id="modal-collection" hidden aria-hidden="true">
+            <div class="modal-backdrop" data-modal-dismiss></div>
+            <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modal-collection-title" tabindex="-1">
+                <div class="modal-header">
+                    <h2 id="modal-collection-title">Collection</h2>
+                    <button type="button" class="modal-close" data-modal-close aria-label="Close Collection panel">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="collection-summary" id="collection-summary">
+                        <div class="summary-pill">Total Pokémon: <span id="summary-total">0</span></div>
+                        <div class="summary-pill">Unique Species: <span id="summary-unique">0</span></div>
+                        <div class="summary-pill">Shiny Friends: <span id="summary-shiny">0</span></div>
+                    </div>
+                    <div id="collection-grid" class="collection-grid"></div>
+                    <div id="collection-empty" class="collection-empty" hidden>
+                        You haven't caught any Pokémon yet. Explore each time of day to build your collection!
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal" id="modal-log" hidden aria-hidden="true">
+            <div class="modal-backdrop" data-modal-dismiss></div>
+            <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modal-log-title" tabindex="-1">
+                <div class="modal-header">
+                    <h2 id="modal-log-title">Adventure Log</h2>
+                    <button type="button" class="modal-close" data-modal-close aria-label="Close Log panel">×</button>
+                </div>
+                <div class="modal-body">
                     <article class="card log-card">
-                        <h2>Adventure Log</h2>
-                        <ul id="activity-log">
-                            <li>Timekeeper initialized. Your journey begins now.</li>
-                        </ul>
+                        <h2>Recent Activity</h2>
+                        <ul id="activity-log"></ul>
                     </article>
                 </div>
-            </section>
-            <section id="collection" data-section>
-                <div class="collection-summary" id="collection-summary">
-                    <div class="summary-pill">Total Pokémon: <span id="summary-total">0</span></div>
-                    <div class="summary-pill">Unique Species: <span id="summary-unique">0</span></div>
-                    <div class="summary-pill">Shiny Friends: <span id="summary-shiny">0</span></div>
-                </div>
-                <div id="collection-grid" class="collection-grid"></div>
-                <div id="collection-empty" class="collection-empty" hidden>
-                    You haven't caught any Pokémon yet. Explore each time of day to build your collection!
-                </div>
-            </section>
-        </main>
+            </div>
+        </div>
         <footer>
             Pokémon assets © Nintendo/Creatures Inc./GAME FREAK inc. This fan experience is for demonstration purposes only.
         </footer>
@@ -1021,12 +1334,15 @@
         function renderEncounter() {
             const screenArt = document.getElementById('screen-pokemon-art');
             const screenPlaceholder = document.getElementById('screen-placeholder');
+            const grassField = document.getElementById('grass-field');
             const nameEl = document.getElementById('pokemon-name');
             const descriptionEl = document.getElementById('pokemon-description');
             const temperamentEl = document.getElementById('pokemon-temperament');
             const difficultyEl = document.getElementById('pokemon-difficulty');
             const bestBallEl = document.getElementById('pokemon-best-ball');
             const typesContainer = document.getElementById('pokemon-types');
+            const summaryTitle = document.getElementById('screen-summary-title');
+            const summaryText = document.getElementById('screen-summary-text');
 
             if (!currentPokemon) {
                 nameEl.textContent = 'No signal yet';
@@ -1035,6 +1351,12 @@
                 difficultyEl.textContent = '—';
                 bestBallEl.textContent = '—';
                 typesContainer.innerHTML = '';
+                if (summaryTitle) {
+                    summaryTitle.textContent = 'Awaiting signal';
+                }
+                if (summaryText) {
+                    summaryText.textContent = 'Static only… keep watching.';
+                }
                 if (screenArt) {
                     screenArt.hidden = true;
                     screenArt.removeAttribute('src');
@@ -1045,12 +1367,18 @@
                     screenPlaceholder.hidden = false;
                     screenPlaceholder.textContent = 'Static only… keep watching.';
                 }
+                if (grassField) {
+                    grassField.hidden = false;
+                }
                 return;
             }
 
             const { name, types, description, temperament, difficulty, bestBall, id, shiny } = currentPokemon;
             if (screenPlaceholder) {
                 screenPlaceholder.hidden = true;
+            }
+            if (grassField) {
+                grassField.hidden = true;
             }
             if (screenArt) {
                 screenArt.hidden = false;
@@ -1061,6 +1389,17 @@
                 screenArt.classList.add('active');
             }
             nameEl.textContent = shiny ? `✨ Shiny ${name}` : name;
+
+            if (summaryTitle) {
+                summaryTitle.textContent = shiny ? `✨ ${name}` : name;
+            }
+            if (summaryText) {
+                const hasTemperament = temperament && temperament !== '—';
+                const hasBestBall = bestBall && bestBall !== '—';
+                const temperamentLabel = hasTemperament ? `${temperament} temperament` : 'Temperament unknown';
+                const bestBallLabel = hasBestBall ? bestBall : 'any ball';
+                summaryText.textContent = `${temperamentLabel} · Best with ${bestBallLabel}.`;
+            }
 
             typesContainer.innerHTML = '';
             types.forEach(type => {
@@ -1155,24 +1494,38 @@
             if (persist) {
                 saveState();
             }
+            renderLog();
         }
 
         function renderLog() {
             const logList = document.getElementById('activity-log');
-            logList.innerHTML = '';
-            if (state.log.length === 0) {
-                const li = document.createElement('li');
-                li.textContent = 'The log is quiet… venture out to make history!';
-                logList.appendChild(li);
-                return;
+            if (logList) {
+                logList.innerHTML = '';
+                if (state.log.length === 0) {
+                    const li = document.createElement('li');
+                    li.textContent = 'The log is quiet… venture out to make history!';
+                    logList.appendChild(li);
+                } else {
+                    state.log.forEach(entry => {
+                        const li = document.createElement('li');
+                        li.className = entry.type || '';
+                        const time = new Date(entry.timestamp);
+                        li.innerHTML = `<strong>${time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</strong> — ${entry.message}`;
+                        logList.appendChild(li);
+                    });
+                }
             }
-            state.log.forEach(entry => {
-                const li = document.createElement('li');
-                li.className = entry.type || '';
-                const time = new Date(entry.timestamp);
-                li.innerHTML = `<strong>${time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</strong> — ${entry.message}`;
-                logList.appendChild(li);
-            });
+
+            const logPreview = document.getElementById('log-preview-text');
+            if (logPreview) {
+                if (state.log.length === 0) {
+                    logPreview.textContent = 'The log is quiet… venture out to make history!';
+                } else {
+                    const latest = state.log[0];
+                    const timestamp = new Date(latest.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    logPreview.textContent = `${timestamp} — ${latest.message}`;
+                }
+            }
         }
 
         function renderCollection() {
@@ -1222,13 +1575,11 @@
             if (!settings) return;
             if (!currentPokemon) {
                 recordLog('No Pokémon is present to catch right now.', 'fail');
-                renderLog();
                 updateInventoryUI();
                 return;
             }
             if ((state.inventory[ballType] || 0) <= 0) {
                 recordLog(`You are out of ${settings.label}.`, 'fail');
-                renderLog();
                 updateInventoryUI();
                 return;
             }
@@ -1271,7 +1622,6 @@
                 renderEncounter();
                 if (force || hadEncounter) {
                     recordLog('The Pokédex hears only rustling grass for now.', 'info');
-                    renderLog();
                 }
                 return;
             }
@@ -1301,33 +1651,78 @@
             }
         }
 
-        function setupNavigation() {
-            const navButtons = document.querySelectorAll('nav button');
-            navButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    navButtons.forEach(btn => btn.classList.remove('active'));
-                    button.classList.add('active');
-                    const target = button.dataset.target;
-                    document.querySelectorAll('section[data-section]').forEach(section => {
-                        section.classList.toggle('active', section.id === target);
-                    });
-                });
-            });
-        }
-
         function setupCatchButtons() {
             document.querySelectorAll('.ball-buttons button').forEach(button => {
                 button.addEventListener('click', () => attemptCatch(button.dataset.ball));
             });
         }
 
+        let activeModal = null;
+        let modalTrigger = null;
+
+        function openModal(id, trigger) {
+            const modal = document.getElementById(id);
+            if (!modal) return;
+            if (activeModal && activeModal !== modal) {
+                modalTrigger = null;
+                closeModal(activeModal);
+            }
+            modalTrigger = trigger || document.activeElement;
+            modal.hidden = false;
+            modal.setAttribute('aria-hidden', 'false');
+            modal.classList.add('open');
+            document.body.classList.add('modal-open');
+            const dialog = modal.querySelector('[role="dialog"]');
+            if (dialog) {
+                dialog.focus();
+            } else {
+                modal.focus();
+            }
+            activeModal = modal;
+        }
+
+        function closeModal(modal = activeModal) {
+            if (!modal) return;
+            modal.classList.remove('open');
+            modal.setAttribute('aria-hidden', 'true');
+            modal.hidden = true;
+            activeModal = null;
+            if (!document.querySelector('.modal.open')) {
+                document.body.classList.remove('modal-open');
+            }
+            if (modalTrigger && typeof modalTrigger.focus === 'function') {
+                modalTrigger.focus();
+            }
+            modalTrigger = null;
+        }
+
+        function setupModals() {
+            document.querySelectorAll('[data-modal-target]').forEach(button => {
+                button.addEventListener('click', () => openModal(button.dataset.modalTarget, button));
+            });
+            document.querySelectorAll('[data-modal-close]').forEach(button => {
+                button.addEventListener('click', () => closeModal());
+            });
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.addEventListener('click', event => {
+                    if (event.target === modal || event.target.hasAttribute('data-modal-dismiss')) {
+                        closeModal(modal);
+                    }
+                });
+            });
+            document.addEventListener('keydown', event => {
+                if (event.key === 'Escape' && activeModal) {
+                    closeModal();
+                }
+            });
+        }
+
         function initialize() {
             loadState();
-            setupNavigation();
             setupCatchButtons();
+            setupModals();
             accrueResources();
             updateInventoryUI();
-            renderLog();
             renderCollection();
             updateClock();
             updateTimers();
