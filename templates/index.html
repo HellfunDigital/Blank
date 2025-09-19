@@ -167,7 +167,117 @@
             position: relative;
             display: flex;
             flex-direction: column;
-            gap: clamp(16px, 3vw, 24px);
+            gap: clamp(18px, 3.2vw, 26px);
+        }
+
+        .screen-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .screen-top .slot-chip {
+            align-self: flex-end;
+        }
+
+        .screen-pokemon {
+            position: relative;
+            border-radius: 18px;
+            background: radial-gradient(circle at 50% 22%, rgba(97, 255, 180, 0.2), transparent 70%), rgba(6, 24, 16, 0.9);
+            border: 1px solid rgba(18, 65, 43, 0.7);
+            box-shadow: inset 0 0 22px rgba(0, 0, 0, 0.6), 0 0 28px rgba(33, 120, 80, 0.4);
+            min-height: clamp(200px, 28vw, 260px);
+            overflow: hidden;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding: 28px 16px 18px;
+            isolation: isolate;
+        }
+
+        .screen-pokemon::before {
+            content: "";
+            position: absolute;
+            inset: -10%;
+            background: repeating-linear-gradient(
+                to bottom,
+                rgba(40, 255, 180, 0.12) 0px,
+                rgba(40, 255, 180, 0.12) 2px,
+                transparent 2px,
+                transparent 6px
+            );
+            opacity: 0.4;
+            mix-blend-mode: screen;
+            pointer-events: none;
+            animation: static-shift 2s steps(12) infinite;
+        }
+
+        .screen-pokemon::after {
+            content: "";
+            position: absolute;
+            inset: -18%;
+            background: radial-gradient(circle, rgba(8, 120, 60, 0.4) 0%, transparent 60%);
+            opacity: 0.25;
+            mix-blend-mode: color-dodge;
+            pointer-events: none;
+        }
+
+        .vhs-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(0, 50, 30, 0.35), rgba(0, 0, 0, 0.8));
+            mix-blend-mode: screen;
+            animation: vhs-roll 7s linear infinite;
+            pointer-events: none;
+            opacity: 0.7;
+            z-index: 3;
+        }
+
+        .screen-pokemon img {
+            position: relative;
+            z-index: 2;
+            width: min(68%, 240px);
+            filter: hue-rotate(95deg) saturate(0.8) contrast(1.3) brightness(1.15);
+            image-rendering: pixelated;
+            mix-blend-mode: screen;
+            transform-origin: center bottom;
+        }
+
+        .screen-pokemon img.active {
+            animation: walk-loop 9s ease-in-out infinite;
+        }
+
+        .screen-placeholder {
+            position: relative;
+            z-index: 4;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 14px;
+            letter-spacing: 1.6px;
+            text-transform: uppercase;
+            color: rgba(136, 255, 203, 0.85);
+            text-align: center;
+        }
+
+        @keyframes static-shift {
+            0% { transform: translateY(-6%); }
+            50% { transform: translateY(3%); }
+            100% { transform: translateY(-6%); }
+        }
+
+        @keyframes vhs-roll {
+            0% { opacity: 0.55; transform: translateY(-12%); }
+            50% { opacity: 0.8; transform: translateY(4%); }
+            100% { opacity: 0.55; transform: translateY(-12%); }
+        }
+
+        @keyframes walk-loop {
+            0% { transform: translateX(-20%) scaleX(1); }
+            48% { transform: translateX(20%) scaleX(1); }
+            50% { transform: translateX(20%) scaleX(-1); }
+            98% { transform: translateX(-20%) scaleX(-1); }
+            100% { transform: translateX(-20%) scaleX(1); }
         }
 
         .clock-label {
@@ -337,117 +447,11 @@
             overflow: hidden;
         }
 
-        .encounter-hero {
-            position: relative;
-            min-height: 340px;
-            border-radius: 20px;
-            background: radial-gradient(circle at 30% 20%, rgba(97, 255, 180, 0.15), transparent 70%), rgba(12, 28, 24, 0.9);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 24px;
-            box-shadow: inset 0 0 35px rgba(0, 0, 0, 0.65);
-        }
-
-        .encounter-hero::after {
-            content: "";
-            position: absolute;
-            inset: 12px;
-            border-radius: 16px;
-            border: 1px dashed rgba(201, 255, 229, 0.3);
-            pointer-events: none;
-        }
-
-        .encounter-hero img {
-            width: min(260px, 62%);
-            filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.45));
-            transition: transform 0.5s ease;
-            z-index: 1;
-        }
-
-        .encounter-hero img:hover {
-            transform: scale(1.05) translateY(-6px);
-        }
-
-        .encounter-hero.empty {
-            background: radial-gradient(circle at 60% 40%, rgba(255, 255, 255, 0.08), transparent 70%), rgba(10, 28, 18, 0.95);
-        }
-
-        .grass-field {
-            position: absolute;
-            bottom: 24px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80%;
-            display: flex;
-            justify-content: space-between;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.4s ease;
-            z-index: 0;
-        }
-
-        .grass-field.active {
-            opacity: 1;
-        }
-
-        .grass-blade {
-            width: 12px;
-            height: 90px;
-            border-radius: 999px 999px 0 0;
-            background: linear-gradient(180deg, rgba(56, 176, 0, 0.8), rgba(16, 70, 0, 0.9));
-            animation: grass-sway 2.6s ease-in-out infinite;
-            transform-origin: bottom center;
-            filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.45));
-        }
-
-        .grass-blade:nth-child(odd) {
-            height: 70px;
-            animation-duration: 2.2s;
-        }
-
-        .grass-blade:nth-child(even) {
-            height: 110px;
-            animation-duration: 3s;
-        }
-
-        .no-encounter-label {
-            position: absolute;
-            bottom: 34%;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 8px 16px;
-            background: rgba(0, 0, 0, 0.55);
-            border-radius: 999px;
-            color: rgba(201, 255, 229, 0.9);
-            letter-spacing: 2px;
-            font-size: 12px;
-            text-transform: uppercase;
-            opacity: 0;
-            transition: opacity 0.4s ease;
-            z-index: 1;
-        }
-
-        .no-encounter-label.active {
-            opacity: 1;
-        }
-
-        @keyframes grass-sway {
-            0% {
-                transform: rotate(-4deg);
-            }
-            50% {
-                transform: rotate(4deg);
-            }
-            100% {
-                transform: rotate(-4deg);
-            }
-        }
-
         .encounter-details {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            align-items: flex-start;
+            gap: 16px;
         }
 
         .type-chip {
@@ -493,53 +497,47 @@
 
         .ball-buttons button {
             flex: 1;
-            min-width: 160px;
-            padding: 14px 18px;
-            border-radius: 16px;
-            border: 0;
+            min-width: 130px;
+            padding: 10px 16px;
+            border-radius: 999px;
+            border: 1px solid rgba(97, 255, 180, 0.45);
+            background: rgba(8, 36, 24, 0.85);
             cursor: pointer;
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            color: #fff;
-            transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
-            display: flex;
+            font-family: 'Rajdhani', sans-serif;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
-        }
-
-        .ball-buttons button[data-ball="pokeBalls"] {
-            background: linear-gradient(135deg, #ef5350, #d32f2f);
-        }
-
-        .ball-buttons button[data-ball="greatBalls"] {
-            background: linear-gradient(135deg, #42a5f5, #1e88e5);
-        }
-
-        .ball-buttons button[data-ball="ultraBalls"] {
-            background: linear-gradient(135deg, #fbc02d, #f57f17);
-            color: #1a1a1a;
-        }
-
-        .ball-buttons button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-            filter: grayscale(20%);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, filter 0.2s ease;
         }
 
         .ball-buttons button:not(:disabled):hover {
             transform: translateY(-2px);
-            box-shadow: 0 14px 24px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.35);
+            background: rgba(12, 52, 34, 0.9);
+        }
+
+        .ball-buttons button:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            filter: grayscale(40%);
         }
 
         .ball-sprite {
             width: 28px;
             height: 28px;
             image-rendering: pixelated;
-            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.4));
+            filter: hue-rotate(95deg) saturate(1.2) brightness(1.15) drop-shadow(0 4px 6px rgba(0, 0, 0, 0.45));
+        }
+
+        .ball-count {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: rgba(192, 255, 226, 0.95);
         }
 
         .shiny-rate {
@@ -715,12 +713,13 @@
                 padding: 24px;
             }
 
-            .encounter-hero {
-                min-height: 260px;
+            .screen-pokemon {
+                min-height: 200px;
+                padding: 24px 12px 16px;
             }
 
             .ball-buttons button {
-                min-width: 130px;
+                min-width: 110px;
             }
 
             .ball-sprite {
@@ -749,12 +748,19 @@
                 <div class="pokedex-screen">
                     <div class="screen-glare" aria-hidden="true"></div>
                     <div class="screen-content">
-                        <div class="clock-display">
-                            <div class="clock-label">Current Time</div>
-                            <time id="clock-time">00:00:00</time>
-                            <span id="clock-date">—</span>
+                        <div class="screen-top">
+                            <div class="clock-display">
+                                <div class="clock-label">Current Time</div>
+                                <time id="clock-time">00:00:00</time>
+                                <span id="clock-date">—</span>
+                            </div>
+                            <div class="slot-chip" id="slot-label">Awaiting time slot…</div>
                         </div>
-                        <div class="slot-chip" id="slot-label">Awaiting time slot…</div>
+                        <div class="screen-pokemon">
+                            <div class="vhs-overlay" aria-hidden="true"></div>
+                            <img id="screen-pokemon-art" src="" alt="Encountered Pokémon" hidden>
+                            <div class="screen-placeholder" id="screen-placeholder">Tuning the feed for a wild Pokémon…</div>
+                        </div>
                     </div>
                 </div>
                 <div class="pokedex-footer">
@@ -771,24 +777,11 @@
             <section id="adventure" data-section class="active">
                 <div class="encounter-area">
                     <article class="card encounter-card">
-                        <div class="encounter-hero">
-                            <div class="grass-field" id="grass-field" aria-hidden="true">
-                                <span class="grass-blade"></span>
-                                <span class="grass-blade"></span>
-                                <span class="grass-blade"></span>
-                                <span class="grass-blade"></span>
-                                <span class="grass-blade"></span>
-                                <span class="grass-blade"></span>
-                                <span class="grass-blade"></span>
-                            </div>
-                            <img id="pokemon-art" src="" alt="Encountered Pokémon" loading="lazy">
-                            <div class="no-encounter-label" id="no-encounter-label">Grass is rustling…</div>
-                        </div>
                         <div class="encounter-details">
                             <div class="slot-chip" id="encounter-slot">—</div>
                             <h2 id="pokemon-name">—</h2>
                             <div id="pokemon-types" class="type-row"></div>
-                            <p id="pokemon-description" class="encounter-description">Stay a moment to meet the Pokémon that matches this time of day.</p>
+                            <p id="pokemon-description" class="encounter-description">Stay tuned to the screen to meet the Pokémon that matches this time of day.</p>
                             <div class="encounter-stats">
                                 <div>
                                     <strong>Temperament</strong>
@@ -834,17 +827,17 @@
                         <div class="catch-controls">
                             <h2>Attempt a Catch</h2>
                             <div class="ball-buttons">
-                                <button data-ball="pokeBalls">
+                                <button data-ball="pokeBalls" aria-label="Throw a Poké Ball">
                                     <img class="ball-sprite" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png" alt="" aria-hidden="true">
-                                    <span>Poké Ball</span>
+                                    <span class="ball-count" data-count="pokeBalls">0</span>
                                 </button>
-                                <button data-ball="greatBalls">
+                                <button data-ball="greatBalls" aria-label="Throw a Great Ball">
                                     <img class="ball-sprite" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/great-ball.png" alt="" aria-hidden="true">
-                                    <span>Great Ball</span>
+                                    <span class="ball-count" data-count="greatBalls">0</span>
                                 </button>
-                                <button data-ball="ultraBalls">
+                                <button data-ball="ultraBalls" aria-label="Throw an Ultra Ball">
                                     <img class="ball-sprite" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png" alt="" aria-hidden="true">
-                                    <span>Ultra Ball</span>
+                                    <span class="ball-count" data-count="ultraBalls">0</span>
                                 </button>
                             </div>
                         </div>
@@ -1026,10 +1019,8 @@
         }
 
         function renderEncounter() {
-            const hero = document.querySelector('.encounter-hero');
-            const art = document.getElementById('pokemon-art');
-            const grass = document.getElementById('grass-field');
-            const grassLabel = document.getElementById('no-encounter-label');
+            const screenArt = document.getElementById('screen-pokemon-art');
+            const screenPlaceholder = document.getElementById('screen-placeholder');
             const nameEl = document.getElementById('pokemon-name');
             const descriptionEl = document.getElementById('pokemon-description');
             const temperamentEl = document.getElementById('pokemon-temperament');
@@ -1038,31 +1029,36 @@
             const typesContainer = document.getElementById('pokemon-types');
 
             if (!currentPokemon) {
-                nameEl.textContent = 'Scanning the grass…';
-                descriptionEl.textContent = 'The tall grass rustles, but no Pokémon has revealed itself yet.';
+                nameEl.textContent = 'No signal yet';
+                descriptionEl.textContent = 'The VHS feed crackles with static while no Pokémon walks across the screen.';
                 temperamentEl.textContent = '—';
                 difficultyEl.textContent = '—';
                 bestBallEl.textContent = '—';
                 typesContainer.innerHTML = '';
-                if (hero) hero.classList.add('empty');
-                if (art) {
-                    art.hidden = true;
-                    art.removeAttribute('src');
-                    art.alt = 'Awaiting encounter';
+                if (screenArt) {
+                    screenArt.hidden = true;
+                    screenArt.removeAttribute('src');
+                    screenArt.alt = 'Awaiting encounter';
+                    screenArt.classList.remove('active');
                 }
-                if (grass) grass.classList.add('active');
-                if (grassLabel) grassLabel.classList.add('active');
+                if (screenPlaceholder) {
+                    screenPlaceholder.hidden = false;
+                    screenPlaceholder.textContent = 'Static only… keep watching.';
+                }
                 return;
             }
 
             const { name, types, description, temperament, difficulty, bestBall, id, shiny } = currentPokemon;
-            if (hero) hero.classList.remove('empty');
-            if (grass) grass.classList.remove('active');
-            if (grassLabel) grassLabel.classList.remove('active');
-            if (art) {
-                art.hidden = false;
-                art.src = getArtUrl(id, shiny);
-                art.alt = shiny ? `Shiny ${name}` : name;
+            if (screenPlaceholder) {
+                screenPlaceholder.hidden = true;
+            }
+            if (screenArt) {
+                screenArt.hidden = false;
+                screenArt.src = getArtUrl(id, shiny);
+                screenArt.alt = shiny ? `Shiny ${name}` : name;
+                screenArt.classList.remove('active');
+                void screenArt.offsetWidth;
+                screenArt.classList.add('active');
             }
             nameEl.textContent = shiny ? `✨ Shiny ${name}` : name;
 
@@ -1121,13 +1117,15 @@
 
         function updateInventoryUI() {
             Object.keys(RESOURCE_SETTINGS).forEach(key => {
-                const countEl = document.querySelector(`[data-count="${key}"]`);
-                if (countEl) {
-                    countEl.textContent = state.inventory[key] || 0;
-                }
+                const total = state.inventory[key] || 0;
+                document.querySelectorAll(`[data-count="${key}"]`).forEach(el => {
+                    el.textContent = total;
+                });
                 const button = document.querySelector(`.ball-buttons button[data-ball="${key}"]`);
                 if (button) {
-                    button.disabled = (state.inventory[key] || 0) === 0;
+                    button.disabled = total === 0;
+                    const settings = RESOURCE_SETTINGS[key];
+                    button.setAttribute('aria-label', `${settings.label} — ${total} remaining`);
                 }
             });
             renderLog();
